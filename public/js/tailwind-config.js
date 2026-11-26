@@ -1,37 +1,132 @@
 tailwind.config = {
+    darkMode: "class",
     theme: {
         extend: {
-            fontFamily: {
-                sans: ['Inter', 'sans-serif'],
-                display: ['Plus Jakarta Sans', 'sans-serif'],
-            },
             colors: {
-                primary: {
-                    DEFAULT: '#0f2942', // Maritime Navy
-                    dark: '#001428',
-                    light: '#314863',
-                },
-                secondary: {
-                    DEFAULT: '#0d9488', // Mataram Emerald Teal
-                    dark: '#006a61',
-                    light: '#ccfbf1',
-                },
-                tertiary: {
-                    DEFAULT: '#d97706', // Sasak Amber Gold
-                    dark: '#b45309',
-                    light: '#fef3c7',
-                },
+                // Token Kompatibilitas Halaman Login (Existing)
                 neutral: {
                     DEFAULT: '#334155', // Slate Carbon
                     surface: '#f8fafc', // Canvas Base
                     border: '#cbd5e1',
-                }
+                },
+
+                // Token Desain Lombok Sasak Governance (Google Stitch)
+                "primary": {
+                    DEFAULT: "#001428",
+                    dark: "#001428",
+                    light: "#314863",
+                },
+                "primary-container": "#0f2942",
+                "on-primary": "#ffffff",
+                "on-primary-container": "#7991af",
+                "primary-fixed": "#d1e4ff",
+                "primary-fixed-dim": "#b0c9e8",
+                "on-primary-fixed": "#011d35",
+                "on-primary-fixed-variant": "#314863",
+                "inverse-primary": "#b0c9e8",
+
+                "secondary": {
+                    DEFAULT: "#006a61",
+                    dark: "#006a61",
+                    light: "#ccfbf1",
+                },
+                "secondary-container": "#86f2e4",
+                "on-secondary": "#ffffff",
+                "on-secondary-container": "#006f66",
+                "secondary-fixed": "#89f5e7",
+                "secondary-fixed-dim": "#6bd8cb",
+                "on-secondary-fixed": "#00201d",
+                "on-secondary-fixed-variant": "#005049",
+
+                "tertiary": {
+                    DEFAULT: "#220e00",
+                    dark: "#b45309",
+                    light: "#fef3c7",
+                },
+                "tertiary-container": "#401f00",
+                "on-tertiary": "#ffffff",
+                "on-tertiary-container": "#d77503",
+                "tertiary-fixed": "#ffdcc3",
+                "tertiary-fixed-dim": "#ffb77d",
+                "on-tertiary-fixed": "#2f1500",
+                "on-tertiary-fixed-variant": "#6e3900",
+
+                "surface": "#f8f9ff",
+                "surface-bright": "#f8f9ff",
+                "surface-dim": "#ccdbf4",
+                "surface-tint": "#49607c",
+                "surface-variant": "#d5e3fd",
+                "surface-container-lowest": "#ffffff",
+                "surface-container-low": "#eff4ff",
+                "surface-container": "#e6eeff",
+                "surface-container-high": "#dde9ff",
+                "surface-container-highest": "#d5e3fd",
+                "on-surface": "#0d1c2f",
+                "on-surface-variant": "#43474d",
+                "inverse-surface": "#233144",
+                "inverse-on-surface": "#ebf1ff",
+
+                "background": "#f8f9ff",
+                "on-background": "#0d1c2f",
+                "outline": "#74777e",
+                "outline-variant": "#c3c6ce",
+                "error": "#ba1a1a",
+                "error-container": "#ffdad6",
+                "on-error": "#ffffff",
+                "on-error-container": "#93000a",
             },
             borderRadius: {
-                DEFAULT: '0.25rem', // 4px untuk tombol, input, badge
-                card: '0.5rem',     // 8px untuk card & panel
-                modal: '0.75rem',   // 12px untuk modal
-            }
-        }
-    }
-}
+                DEFAULT: "0.25rem",
+                card: "0.5rem",
+                modal: "0.75rem",
+                lg: "0.25rem",
+                xl: "0.5rem",
+                full: "0.75rem",
+            },
+            spacing: {
+                "space-xs": "0.25rem",
+                "space-sm": "0.5rem",
+                "space-md": "1rem",
+                "space-lg": "1.5rem",
+                "space-xl": "2rem",
+                "space-2xl": "3rem",
+                "gutter": "1.25rem",
+                "gutter-desktop": "1.5rem",
+                "margin": "1rem",
+                "margin-desktop": "2rem",
+            },
+            fontFamily: {
+                sans: ["Inter", "sans-serif"],
+                display: ["Plus Jakarta Sans", "sans-serif"],
+                "headline-xl": ["Plus Jakarta Sans", "sans-serif"],
+                "headline-lg": ["Plus Jakarta Sans", "sans-serif"],
+                "headline-md": ["Plus Jakarta Sans", "sans-serif"],
+                "headline-sm": ["Plus Jakarta Sans", "sans-serif"],
+                "headline-xl-mobile": ["Plus Jakarta Sans", "sans-serif"],
+                "headline-lg-mobile": ["Plus Jakarta Sans", "sans-serif"],
+                "body-lg": ["Inter", "sans-serif"],
+                "body-md": ["Inter", "sans-serif"],
+                "body-sm": ["Inter", "sans-serif"],
+                "label-lg": ["Inter", "sans-serif"],
+                "label-md": ["Inter", "sans-serif"],
+                "label-sm": ["Inter", "sans-serif"],
+                "tabular-data": ["Inter", "sans-serif"],
+            },
+            fontSize: {
+                "headline-xl": ["36px", { lineHeight: "44px", letterSpacing: "-0.02em", fontWeight: "700" }],
+                "headline-lg": ["28px", { lineHeight: "36px", letterSpacing: "-0.02em", fontWeight: "700" }],
+                "headline-md": ["22px", { lineHeight: "28px", letterSpacing: "-0.01em", fontWeight: "600" }],
+                "headline-sm": ["18px", { lineHeight: "24px", fontWeight: "600" }],
+                "headline-xl-mobile": ["28px", { lineHeight: "36px", letterSpacing: "-0.01em", fontWeight: "700" }],
+                "headline-lg-mobile": ["22px", { lineHeight: "30px", letterSpacing: "-0.01em", fontWeight: "600" }],
+                "body-lg": ["16px", { lineHeight: "24px", fontWeight: "400" }],
+                "body-md": ["14px", { lineHeight: "20px", fontWeight: "400" }],
+                "body-sm": ["13px", { lineHeight: "18px", fontWeight: "400" }],
+                "label-lg": ["14px", { lineHeight: "20px", letterSpacing: "0.01em", fontWeight: "600" }],
+                "label-md": ["12px", { lineHeight: "16px", letterSpacing: "0.02em", fontWeight: "600" }],
+                "label-sm": ["11px", { lineHeight: "14px", letterSpacing: "0.04em", fontWeight: "700" }],
+                "tabular-data": ["13px", { lineHeight: "18px", letterSpacing: "0em", fontWeight: "500" }],
+            },
+        },
+    },
+};

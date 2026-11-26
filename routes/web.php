@@ -3,6 +3,8 @@
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\PegawaiController;
 
 // Arahkan halaman utama (/) langsung ke /login
 Route::get('/', function () {
@@ -24,13 +26,13 @@ Route::middleware('auth')->group(function () {
         $role = Auth::user()->role->nama_role ?? '';
 
         if ($role === 'SuperAdmin') {
-            return redirect('/admin/dashboard');
+            return redirect()->route('admin.dashboard');
         } elseif ($role === 'Operator_Kepegawaian') {
-            return redirect('/operator/dashboard');
+            return redirect()->route('operator.dashboard');
         } elseif ($role === 'Pimpinan') {
-            return redirect('/pimpinan/dashboard');
+            return redirect()->route('pimpinan.dashboard');
         } elseif ($role === 'Pegawai') {
-            return redirect('/pegawai/dashboard');
+            return redirect()->route('pegawai.dashboard');
         }
 
         return "Selamat datang! Role Anda belum diatur. <form action='/logout' method='POST'>".csrf_field()."<button type='submit'>Logout</button></form>";
@@ -38,29 +40,26 @@ Route::middleware('auth')->group(function () {
 
     // Area SuperAdmin
     Route::middleware('role:SuperAdmin')->prefix('admin')->group(function () {
-        Route::get('/dashboard', function () {
-            return "Selamat datang, SuperAdmin! <form action='/logout' method='POST'>".csrf_field()."<button type='submit'>Logout</button></form>";
-        });
+        Route::get('/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
     });
 
     // Area Operator Kepegawaian
     Route::middleware('role:Operator_Kepegawaian')->prefix('operator')->group(function () {
-        Route::get('/dashboard', function () {
-            return "Selamat datang, Operator Kepegawaian! <form action='/logout' method='POST'>".csrf_field()."<button type='submit'>Logout</button></form>";
-        });
+        Route::get('/dashboard', [DashboardController::class, 'index'])->name('operator.dashboard');
     });
 
     // Area Pimpinan
     Route::middleware('role:Pimpinan')->prefix('pimpinan')->group(function () {
-        Route::get('/dashboard', function () {
-            return "Selamat datang, Pimpinan! <form action='/logout' method='POST'>".csrf_field()."<button type='submit'>Logout</button></form>";
-        });
+        Route::get('/dashboard', [DashboardController::class, 'index'])->name('pimpinan.dashboard');
     });
 
-    // Area Pegawai
+    // Area Pegawai (Mandiri)
     Route::middleware('role:Pegawai')->prefix('pegawai')->group(function () {
-        Route::get('/dashboard', function () {
-            return "Selamat datang, Pegawai! <form action='/logout' method='POST'>".csrf_field()."<button type='submit'>Logout</button></form>";
-        });
+        Route::get('/dashboard', [DashboardController::class, 'index'])->name('pegawai.dashboard');
+    });
+
+    // Modul Pengelolaan Data Induk & e-File (Akses Multi-Role selain Pegawai biasa)
+    Route::middleware('role:SuperAdmin,Operator_Kepegawaian,Pimpinan')->group(function () {
+        Route::get('/data-pegawai', [PegawaiController::class, 'index'])->name('pegawai.index');
     });
 });
