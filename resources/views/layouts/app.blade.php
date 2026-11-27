@@ -34,6 +34,15 @@
         $userRole = $user->role->nama_role ?? 'Pegawai';
         $namaLengkap = $user->pegawai->nama_lengkap ?? $user->username_login ?? 'Pengguna SIMPEG';
         $nipDisplay = $user->username_login ?? '-';
+
+        $alerts = $monitoringAlerts ?? [
+            'total'   => 0,
+            'kontrak' => 0,
+            'kgb'     => 0,
+            'kp'      => 0,
+            'items'   => collect(),
+        ];
+        $isMonitoringRoute = request()->routeIs('monitoring.*');
     @endphp
 
     <!-- SIDEBAR -->
@@ -80,11 +89,56 @@
                         <span class="truncate">Data Induk & e-File</span>
                     </a>
 
-                    <a href="#"
-                       class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl font-label-lg text-label-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all">
-                        <span class="material-symbols-outlined text-[20px]">event_upcoming</span>
-                        <span class="truncate">Kontrak, KGB & KP</span>
-                    </a>
+                    {{-- Dropdown / Sub-menu Monitoring Kontrak, KGB & KP --}}
+                    <div class="flex flex-col gap-1">
+                        <button type="button" onclick="toggleMonitoringMenu()"
+                                class="w-full flex items-center justify-between px-space-md py-space-sm rounded-xl font-label-lg text-label-lg transition-all {{ $isMonitoringRoute ? 'bg-secondary-container text-on-secondary-container font-semibold' : 'text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface' }}">
+                            <div class="flex items-center gap-space-sm min-w-0">
+                                <span class="material-symbols-outlined text-[20px]">event_upcoming</span>
+                                <span class="truncate">Kontrak, KGB & KP</span>
+                            </div>
+                            <div class="flex items-center gap-1 shrink-0">
+                                @if($alerts['total'] > 0)
+                                    <span class="px-1.5 py-0.5 rounded-full bg-error text-on-error font-label-sm text-[10px] font-bold">
+                                        {{ $alerts['total'] }}
+                                    </span>
+                                @endif
+                                <span id="monitoring-chevron" class="material-symbols-outlined text-[18px] transition-transform duration-200 {{ $isMonitoringRoute ? 'rotate-180' : '' }}">expand_more</span>
+                            </div>
+                        </button>
+
+                        <div id="monitoring-submenu" class="{{ $isMonitoringRoute ? 'flex' : 'hidden' }} flex-col gap-1 pl-4 pr-1 py-1">
+                            <a href="{{ route('monitoring.kontrak.index') }}"
+                               class="flex items-center justify-between px-space-md py-2 rounded-lg font-label-md text-label-md transition-all {{ request()->routeIs('monitoring.kontrak.*') ? 'bg-primary-container text-on-primary shadow-sm' : 'text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface' }}">
+                                <span class="truncate">• Kontrak Kerja</span>
+                                @if($alerts['kontrak'] > 0)
+                                    <span class="px-1.5 py-0.5 rounded-full text-[10px] font-bold {{ request()->routeIs('monitoring.kontrak.*') ? 'bg-on-primary text-primary' : 'bg-error-container text-on-error-container' }}">
+                                        {{ $alerts['kontrak'] }}
+                                    </span>
+                                @endif
+                            </a>
+
+                            <a href="{{ route('monitoring.kgb.index') }}"
+                               class="flex items-center justify-between px-space-md py-2 rounded-lg font-label-md text-label-md transition-all {{ request()->routeIs('monitoring.kgb.*') ? 'bg-primary-container text-on-primary shadow-sm' : 'text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface' }}">
+                                <span class="truncate">• Monitoring KGB</span>
+                                @if($alerts['kgb'] > 0)
+                                    <span class="px-1.5 py-0.5 rounded-full text-[10px] font-bold {{ request()->routeIs('monitoring.kgb.*') ? 'bg-on-primary text-primary' : 'bg-error-container text-on-error-container' }}">
+                                        {{ $alerts['kgb'] }}
+                                    </span>
+                                @endif
+                            </a>
+
+                            <a href="{{ route('monitoring.kp.index') }}"
+                               class="flex items-center justify-between px-space-md py-2 rounded-lg font-label-md text-label-md transition-all {{ request()->routeIs('monitoring.kp.*') ? 'bg-primary-container text-on-primary shadow-sm' : 'text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface' }}">
+                                <span class="truncate">• Kenaikan Pangkat</span>
+                                @if($alerts['kp'] > 0)
+                                    <span class="px-1.5 py-0.5 rounded-full text-[10px] font-bold {{ request()->routeIs('monitoring.kp.*') ? 'bg-on-primary text-primary' : 'bg-error-container text-on-error-container' }}">
+                                        {{ $alerts['kp'] }}
+                                    </span>
+                                @endif
+                            </a>
+                        </div>
+                    </div>
                 @endif
 
                 {{-- 3. MENU LAYANAN MANDIRI PEGAWAI (Khusus Pegawai) --}}
@@ -93,6 +147,21 @@
                        class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl font-label-lg text-label-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all">
                         <span class="material-symbols-outlined text-[20px]">folder_shared</span>
                         <span class="truncate">Profil & e-File Saya</span>
+                    </a>
+                    <a href="{{ route('monitoring.kontrak.index') }}"
+                       class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl font-label-lg text-label-lg transition-all {{ request()->routeIs('monitoring.kontrak.*') ? 'bg-primary-container text-on-primary shadow-sm' : 'text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface' }}">
+                        <span class="material-symbols-outlined text-[20px]">description</span>
+                        <span class="truncate">Riwayat Kontrak Saya</span>
+                    </a>
+                    <a href="{{ route('monitoring.kgb.index') }}"
+                       class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl font-label-lg text-label-lg transition-all {{ request()->routeIs('monitoring.kgb.*') ? 'bg-primary-container text-on-primary shadow-sm' : 'text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface' }}">
+                        <span class="material-symbols-outlined text-[20px]">trending_up</span>
+                        <span class="truncate">Riwayat KGB Saya</span>
+                    </a>
+                    <a href="{{ route('monitoring.kp.index') }}"
+                       class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl font-label-lg text-label-lg transition-all {{ request()->routeIs('monitoring.kp.*') ? 'bg-primary-container text-on-primary shadow-sm' : 'text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface' }}">
+                        <span class="material-symbols-outlined text-[20px]">military_tech</span>
+                        <span class="truncate">Riwayat Pangkat Saya</span>
                     </a>
                 @endif
 
@@ -176,14 +245,99 @@
                     </div>
                 </div>
 
-                <!-- Kanan: Notifikasi, Profil User & Logout -->
+                <!-- Kanan: Notifikasi Lonceng, Profil User & Logout -->
                 <div class="flex items-center gap-space-sm md:gap-space-md">
-                    <div class="relative">
-                        <button type="button" class="relative p-2 rounded-xl text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors flex items-center justify-center">
-                            <span class="material-symbols-outlined text-[22px]">notifications</span>
-                            <span class="absolute top-1.5 right-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-error text-on-error font-label-sm text-[10px] font-bold">3</span>
-                        </button>
-                    </div>
+                    @if(in_array($userRole, ['SuperAdmin', 'Operator_Kepegawaian', 'Pimpinan']))
+                        <div class="relative" id="notification-wrapper">
+                            <button type="button" id="notification-btn" onclick="toggleNotificationDropdown(event)"
+                                    title="Peringatan Kontrak, KGB & Kenaikan Pangkat"
+                                    class="relative p-2 rounded-xl text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors flex items-center justify-center">
+                                <span class="material-symbols-outlined text-[22px]">notifications</span>
+                                @if($alerts['total'] > 0)
+                                    <span class="absolute top-1 right-1 flex h-4 min-w-[16px] px-1 items-center justify-center rounded-full bg-error text-on-error font-label-sm text-[10px] font-bold shadow-sm">
+                                        {{ $alerts['total'] > 99 ? '99+' : $alerts['total'] }}
+                                    </span>
+                                @endif
+                            </button>
+
+                            <!-- Dropdown Panel Notifikasi -->
+                            <div id="notification-dropdown"
+                                 class="hidden absolute right-0 mt-2 w-80 sm:w-96 rounded-2xl bg-surface-container-lowest shadow-[0_8px_28px_rgba(0,0,0,0.12)] border border-outline-variant/40 overflow-hidden z-50">
+                                <!-- Header Dropdown -->
+                                <div class="px-4 py-3 bg-surface-container-low border-b border-outline-variant/30 flex items-center justify-between">
+                                    <div>
+                                        <h3 class="font-label-lg text-label-lg text-on-surface font-bold">Peringatan Jatuh Tempo</h3>
+                                        <p class="font-label-sm text-label-sm text-on-surface-variant">Kontrak, KGB & Proyeksi Kenaikan Pangkat</p>
+                                    </div>
+                                    <span class="px-2.5 py-0.5 rounded-full bg-primary-container text-on-primary font-label-sm text-[11px] font-bold">
+                                        {{ $alerts['total'] }} Total
+                                    </span>
+                                </div>
+
+                                <!-- Ringkasan Kategori Filter Cepat -->
+                                <div class="grid grid-cols-3 divide-x divide-outline-variant/30 bg-surface-container-lowest border-b border-outline-variant/30 text-center">
+                                    <a href="{{ route('monitoring.kontrak.index') }}" class="py-2 px-1 hover:bg-surface-container-high transition-colors">
+                                        <span class="block font-tabular-data text-sm font-bold text-on-surface">{{ $alerts['kontrak'] }}</span>
+                                        <span class="block font-label-sm text-[10px] text-on-surface-variant uppercase">Kontrak</span>
+                                    </a>
+                                    <a href="{{ route('monitoring.kgb.index', ['filter' => 'jatuh_tempo']) }}" class="py-2 px-1 hover:bg-surface-container-high transition-colors">
+                                        <span class="block font-tabular-data text-sm font-bold text-on-surface">{{ $alerts['kgb'] }}</span>
+                                        <span class="block font-label-sm text-[10px] text-on-surface-variant uppercase">KGB</span>
+                                    </a>
+                                    <a href="{{ route('monitoring.kp.index', ['filter' => 'proyeksi']) }}" class="py-2 px-1 hover:bg-surface-container-high transition-colors">
+                                        <span class="block font-tabular-data text-sm font-bold text-on-surface">{{ $alerts['kp'] }}</span>
+                                        <span class="block font-label-sm text-[10px] text-on-surface-variant uppercase">Proyeksi KP</span>
+                                    </a>
+                                </div>
+
+                                <!-- Daftar Item Peringatan -->
+                                <div class="max-h-80 overflow-y-auto divide-y divide-outline-variant/20">
+                                    @forelse($alerts['items'] as $item)
+                                        @php
+                                            $isUrgent = $item['sisa_hari'] <= 30;
+                                            $badgeMap = [
+                                                'KONTRAK' => 'bg-error-container text-on-error-container',
+                                                'KGB'     => 'bg-secondary-container text-on-secondary-container',
+                                            ];
+                                            $badgeClass = $badgeMap[$item['kategori']] ?? 'bg-primary-container text-on-primary';
+                                        @endphp
+                                        <a href="{{ $item['url'] }}" class="flex items-start gap-3 p-3.5 hover:bg-surface-container-high/60 transition-colors">
+                                            <span class="mt-0.5 px-2 py-0.5 rounded-md font-label-sm text-[10px] font-bold shrink-0 {{ $badgeClass }}">
+                                                {{ $item['kategori'] }}
+                                            </span>
+                                            <div class="flex-1 min-w-0">
+                                                <p class="font-label-md text-label-md text-on-surface font-semibold truncate">
+                                                    {{ $item['pegawai'] }}
+                                                </p>
+                                                <p class="font-label-sm text-[11px] text-on-surface-variant font-tabular-data">
+                                                    NIP. {{ $item['nip'] }}
+                                                </p>
+                                                <p class="mt-0.5 font-body-sm text-xs text-on-surface-variant">
+                                                    {{ $item['detail'] }}
+                                                </p>
+                                            </div>
+                                            <span class="shrink-0 px-2 py-0.5 rounded-full font-tabular-data text-[11px] font-semibold {{ $isUrgent ? 'bg-error text-on-error' : 'bg-surface-container-high text-on-surface-variant' }}">
+                                                {{ $item['sisa_hari'] <= 0 ? 'Hari ini' : 'H-' . $item['sisa_hari'] }}
+                                            </span>
+                                        </a>
+                                    @empty
+                                        <div class="py-8 px-4 text-center flex flex-col items-center gap-1">
+                                            <span class="material-symbols-outlined text-secondary text-[28px]">check_circle</span>
+                                            <span class="font-label-md text-on-surface font-medium">Tidak ada jatuh tempo mendekat</span>
+                                            <span class="font-body-sm text-xs text-on-surface-variant">Semua kontrak, KGB, dan KP dalam batas aman.</span>
+                                        </div>
+                                    @endforelse
+                                </div>
+
+                                <!-- Footer Dropdown -->
+                                <div class="px-4 py-2.5 bg-surface-container-low border-t border-outline-variant/30 flex items-center justify-between text-xs">
+                                    <a href="{{ route('monitoring.kontrak.index') }}" class="font-label-md text-primary font-semibold hover:underline">Kontrak</a>
+                                    <a href="{{ route('monitoring.kgb.index') }}" class="font-label-md text-primary font-semibold hover:underline">Semua KGB</a>
+                                    <a href="{{ route('monitoring.kp.index') }}" class="font-label-md text-primary font-semibold hover:underline">Semua KP</a>
+                                </div>
+                            </div>
+                        </div>
+                    @endif
 
                     <div class="h-6 w-px bg-outline-variant"></div>
 
@@ -219,6 +373,17 @@
                 </div>
             @endif
 
+            @if($errors->any())
+                <div class="mb-space-md p-space-md rounded-xl bg-error-container text-on-error-container font-label-md">
+                    <div class="font-bold mb-1">Terjadi kesalahan validasi:</div>
+                    <ul class="list-disc list-inside text-xs space-y-0.5">
+                        @foreach($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+
             @yield('content')
         </main>
     </div>
@@ -228,6 +393,33 @@
             const sidebar = document.getElementById('sidebar');
             sidebar.classList.toggle('-translate-x-full');
         }
+
+        function toggleMonitoringMenu() {
+            const submenu = document.getElementById('monitoring-submenu');
+            const chevron = document.getElementById('monitoring-chevron');
+            if (submenu && chevron) {
+                submenu.classList.toggle('hidden');
+                submenu.classList.toggle('flex');
+                chevron.classList.toggle('rotate-180');
+            }
+        }
+
+        function toggleNotificationDropdown(event) {
+            event.stopPropagation();
+            const dropdown = document.getElementById('notification-dropdown');
+            if (dropdown) {
+                dropdown.classList.toggle('hidden');
+            }
+        }
+
+        // Tutup dropdown notifikasi jika klik di luar panel
+        document.addEventListener('click', function (event) {
+            const wrapper = document.getElementById('notification-wrapper');
+            const dropdown = document.getElementById('notification-dropdown');
+            if (wrapper && dropdown && !wrapper.contains(event.target)) {
+                dropdown.classList.add('hidden');
+            }
+        });
     </script>
     @stack('scripts')
 </body>
