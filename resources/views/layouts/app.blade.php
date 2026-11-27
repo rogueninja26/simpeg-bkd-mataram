@@ -166,8 +166,8 @@
                 @endif
 
                 {{-- 4. MENU OPERASIONAL HARIAN (Semua Peran) --}}
-                <a href="#"
-                   class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl font-label-lg text-label-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all">
+                <a href="{{ route('cuti-presensi.index') }}"
+                   class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl font-label-lg text-label-lg transition-all {{ request()->routeIs('cuti-presensi.*') ? 'bg-primary-container text-on-primary shadow-sm' : 'text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface' }}">
                     <span class="material-symbols-outlined text-[20px]">date_range</span>
                     <span class="truncate">Cuti, Izin & Presensi</span>
                 </a>

@@ -8,6 +8,7 @@ use App\Http\Controllers\PegawaiController;
 use App\Http\Controllers\Monitoring\KontrakKerjaController;
 use App\Http\Controllers\Monitoring\KgbController;
 use App\Http\Controllers\Monitoring\KenaikanPangkatController;
+use App\Http\Controllers\CutiPresensiController; // <-- TAMBAHKAN INI
 
 // Arahkan halaman utama (/) langsung ke /login
 Route::get('/', function () {
@@ -98,6 +99,23 @@ Route::middleware('auth')->group(function () {
             Route::post('/kenaikan-pangkat', [KenaikanPangkatController::class, 'store'])->name('kp.store');
             Route::put('/kenaikan-pangkat/{id}', [KenaikanPangkatController::class, 'update'])->name('kp.update');
             Route::delete('/kenaikan-pangkat/{id}', [KenaikanPangkatController::class, 'destroy'])->name('kp.destroy');
+        });
+    });
+
+    // 4. Modul Cuti, Izin & Presensi (Tahap 3) <-- TAMBAHKAN BLOK INI
+    Route::prefix('cuti-presensi')->name('cuti-presensi.')->group(function () {
+        // Semua Role bisa melihat & mengajukan cuti mandiri
+        Route::get('/', [CutiPresensiController::class, 'index'])->name('index');
+        Route::post('/ajukan', [CutiPresensiController::class, 'store'])->name('store');
+
+        // Proses Approval (SuperAdmin, Operator_Kepegawaian, Pimpinan)
+        Route::middleware('role:SuperAdmin,Operator_Kepegawaian,Pimpinan')->group(function () {
+            Route::post('/approval/{id}', [CutiPresensiController::class, 'prosesApproval'])->name('approval');
+        });
+
+        // Input Rekap Presensi Bulanan (Khusus SuperAdmin & Operator_Kepegawaian)
+        Route::middleware('role:SuperAdmin,Operator_Kepegawaian')->group(function () {
+            Route::post('/rekap-bulanan', [CutiPresensiController::class, 'storeRekapPresensi'])->name('rekap.store');
         });
     });
 });
